@@ -1,4 +1,5 @@
 import { PortfolioTable } from "@/components/PortfolioTable";
+import { RiskAnalysis } from "@/components/RiskAnalysis";
 import {
   POSITIONS,
   enrichPosition,
@@ -103,6 +104,8 @@ export default async function Home() {
           </p>
         </div>
       </section>
+
+      <RiskAnalysis rows={rows} totalValue={totalValue} />
 
       <PortfolioTable rows={rows} asOf={asOf} />
     </main>

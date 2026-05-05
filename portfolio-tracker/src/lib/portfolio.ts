@@ -1,18 +1,57 @@
+export type PositionSector = "Technology" | "Energy" | "ETF/Diversified";
+
 export type PositionInput = {
   ticker: string;
   name: string;
   shares: number;
   /** Average cost per share (USD) */
   costBasisPerShare: number;
+  sector: PositionSector;
 };
 
 export const POSITIONS: readonly PositionInput[] = [
-  { ticker: "RIG", name: "Transocean", shares: 80, costBasisPerShare: 3.32 },
-  { ticker: "NVDA", name: "NVIDIA", shares: 1.728, costBasisPerShare: 180.89 },
-  { ticker: "INTC", name: "Intel", shares: 8.5, costBasisPerShare: 32.52 },
-  { ticker: "SPY", name: "SPDR S&P 500 ETF", shares: 1.06, costBasisPerShare: 648.4 },
-  { ticker: "AMZN", name: "Amazon", shares: 1.5, costBasisPerShare: 231.43 },
-  { ticker: "ABAT", name: "American Battery", shares: 75, costBasisPerShare: 2.98 },
+  {
+    ticker: "RIG",
+    name: "Transocean",
+    shares: 80,
+    costBasisPerShare: 3.32,
+    sector: "Energy",
+  },
+  {
+    ticker: "NVDA",
+    name: "NVIDIA",
+    shares: 1.728,
+    costBasisPerShare: 180.89,
+    sector: "Technology",
+  },
+  {
+    ticker: "INTC",
+    name: "Intel",
+    shares: 8.5,
+    costBasisPerShare: 32.52,
+    sector: "Technology",
+  },
+  {
+    ticker: "SPY",
+    name: "SPDR S&P 500 ETF",
+    shares: 1.06,
+    costBasisPerShare: 648.4,
+    sector: "ETF/Diversified",
+  },
+  {
+    ticker: "AMZN",
+    name: "Amazon",
+    shares: 1.5,
+    costBasisPerShare: 231.43,
+    sector: "Technology",
+  },
+  {
+    ticker: "ABAT",
+    name: "American Battery",
+    shares: 75,
+    costBasisPerShare: 2.98,
+    sector: "Technology",
+  },
 ] as const;
 
 export type EnrichedPosition = PositionInput & {
