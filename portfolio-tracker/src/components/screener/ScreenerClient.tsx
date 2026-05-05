@@ -92,7 +92,7 @@ export function ScreenerClient() {
         setSectors([]);
         setFetchedAt(null);
         setError(body.error || "Request failed");
-        setLimitCode(body.code === "FMP_LIMIT" || res.status === 429);
+        setLimitCode(body.code === "RATE_LIMIT" || res.status === 429);
         return;
       }
       setRawRows(body.rows ?? []);
@@ -130,8 +130,9 @@ export function ScreenerClient() {
           Stock Screener
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-400">
-          Find mispriced companies with improving fundamentals. Live data from
-          Financial Modeling Prep (server-side only).
+          Find mispriced companies with improving fundamentals.           Live data from Yahoo Finance v8 chart (prices / 52w / 6M) and SEC EDGAR
+          (fundamentals, shares, EPS). No paid API keys — avoids v7 quote, which
+          often returns 401 from cloud servers.
         </p>
         {fetchedAt && !loading && (
           <p className="mt-3 text-xs text-zinc-600">
@@ -172,15 +173,16 @@ export function ScreenerClient() {
           <p className="mt-2 text-sm opacity-90">{error}</p>
           {!limitCode && (
             <p className="mt-3 text-xs text-zinc-500">
-              Confirm{" "}
+              If this persists, wait and retry — Yahoo or SEC may be blocking or
+              timing out. Optional: set{" "}
               <code className="rounded bg-zinc-900 px-1 py-0.5 text-zinc-300">
-                FMP_API_KEY
+                SEC_CONTACT_EMAIL
               </code>{" "}
-              is set in{" "}
+              in{" "}
               <code className="rounded bg-zinc-900 px-1 py-0.5 text-zinc-300">
                 .env.local
               </code>{" "}
-              (local) or Vercel environment variables.
+              for friendlier SEC access.
             </p>
           )}
         </div>
@@ -353,7 +355,7 @@ export function ScreenerClient() {
                 No matches found. Try loosening your filters.
               </p>
               <p className="mt-2 text-xs text-zinc-600">
-                {rawRows.length} loaded from FMP before filters.
+                {rawRows.length} loaded from Yahoo chart + SEC before filters.
               </p>
             </div>
           ) : (

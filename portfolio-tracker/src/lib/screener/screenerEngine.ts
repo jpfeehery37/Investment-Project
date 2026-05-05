@@ -45,25 +45,15 @@ export type ScreenerSortKey =
 
 export const DEFAULT_SCREENER_FILTERS: ScreenerFilters = {
   sector: "all",
-  minMarketCap: 300_000_000,
+  minMarketCap: 250_000_000,
   maxPe: 35,
   maxEvEbitda: 22,
-  maxDistanceFrom52WeekLowPct: 60,
+  /** Wider default so more names pass until you tighten the “near low” filter. */
+  maxDistanceFrom52WeekLowPct: 120,
   requireNegative6m: false,
   requirePositiveRevenueGrowth: false,
   requirePositiveOperatingMargin: false,
 };
-
-function numOrNull(v: unknown): number | null {
-  if (typeof v !== "number" || !Number.isFinite(v)) return null;
-  return v;
-}
-
-function normalizePctish(v: number | null): number | null {
-  if (v == null || !Number.isFinite(v)) return null;
-  if (Math.abs(v) <= 1 && v !== 0) return v * 100;
-  return v;
-}
 
 export function computeSignals(row: Omit<ScreenerRow, "signals">): ScreenerSignal[] {
   const signals: ScreenerSignal[] = [];
@@ -119,8 +109,8 @@ export function applyFilters(rows: ScreenerRow[], f: ScreenerFilters): ScreenerR
     }
     const mcap = r.marketCap;
     if (mcap == null || mcap < f.minMarketCap) return false;
-    if (f.maxPe != null) {
-      if (r.pe == null || r.pe <= 0 || r.pe > f.maxPe) return false;
+    if (f.maxPe != null && r.pe != null && r.pe > 0 && r.pe > f.maxPe) {
+      return false;
     }
     if (
       f.maxEvEbitda != null &&
@@ -285,7 +275,7 @@ export function buildResearchQuestions(row: ScreenerRow): string[] {
   ];
 }
 
-/** Merge raw FMP fragments into a row + signals (pure, testable). */
+/** Build a screener row + signals from merged market + fundamental fields (pure). */
 export function assembleRow(input: {
   ticker: string;
   companyName: string;
@@ -312,53 +302,4 @@ export function assembleRow(input: {
   };
   const signals = computeSignals(base);
   return { ...base, signals };
-}
-
-export function readSixMonthReturn(change: unknown): number | null {
-  const row = Array.isArray(change) ? change[0] : change;
-  if (!row || typeof row !== "object") return null;
-  const o = row as Record<string, unknown>;
-  const raw =
-    o["6M"] ??
-    o["6m"] ??
-    o["6MChange"] ??
-    o["6Month"] ??
-    o["6months"] ??
-    o["6Months"];
-  if (typeof raw === "number" && Number.isFinite(raw)) return raw;
-  if (typeof raw === "string") {
-    const n = parseFloat(raw.replace("%", "").trim());
-    return Number.isFinite(n) ? n : null;
-  }
-  return null;
-}
-
-export function readEvToEbitda(metrics: unknown): number | null {
-  const row = Array.isArray(metrics) ? metrics[0] : metrics;
-  if (!row || typeof row !== "object") return null;
-  const o = row as Record<string, unknown>;
-  const v =
-    o.enterpriseValueOverEBITDATTM ??
-    o.enterpriseValueOverEBITDATtm ??
-    o.evToEBITDATTM ??
-    o.evToEbitdaTTM;
-  return numOrNull(v);
-}
-
-export function readOperatingMarginTtm(ratios: unknown): number | null {
-  const row = Array.isArray(ratios) ? ratios[0] : ratios;
-  if (!row || typeof row !== "object") return null;
-  const o = row as Record<string, unknown>;
-  return normalizePctish(numOrNull(o.operatingProfitMarginTTM));
-}
-
-export function readRevenueGrowth(growth: unknown): number | null {
-  const row = Array.isArray(growth) ? growth[0] : growth;
-  if (!row || typeof row !== "object") return null;
-  const o = row as Record<string, unknown>;
-  const raw =
-    numOrNull(o.revenueGrowth) ??
-    numOrNull(o.growthRevenue) ??
-    numOrNull(o.revenueGrowthYoy);
-  return normalizePctish(raw);
 }

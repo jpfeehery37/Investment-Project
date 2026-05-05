@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Stock Screener",
   description:
-    "Find mispriced companies with improving fundamentals using live FMP data.",
+    "Find mispriced companies with improving fundamentals using Yahoo chart and SEC EDGAR data.",
 };
 
 export default function ScreenerPage() {

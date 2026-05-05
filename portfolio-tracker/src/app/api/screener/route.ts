@@ -1,5 +1,4 @@
-import { FmpApiError, FmpConfigurationError } from "@/lib/fmp/client";
-import { loadScreenerUniverse, uniqueSectors } from "@/lib/screener/fmpScreenerData";
+import { loadScreenerUniverse, uniqueSectors } from "@/lib/screener/freeScreenerData";
 
 export const maxDuration = 60;
 
@@ -20,27 +19,18 @@ export async function GET() {
       },
     );
   } catch (err) {
-    if (err instanceof FmpConfigurationError) {
-      return Response.json(
-        { error: err.message, code: "FMP_CONFIG" },
-        { status: 500 },
-      );
-    }
-    if (err instanceof FmpApiError) {
-      const limit = err.status === 402 || err.status === 429;
-      return Response.json(
-        {
-          error: err.message,
-          code: limit ? "FMP_LIMIT" : "FMP_ERROR",
-          status: err.status,
-        },
-        { status: limit ? 429 : 502 },
-      );
-    }
     const message = err instanceof Error ? err.message : "Unknown error";
+    const rateLimited =
+      /429|rate limit|too many requests/i.test(message) ||
+      (err instanceof Error && err.name === "AbortError");
     return Response.json(
-      { error: `Screener failed: ${message}`, code: "UNKNOWN" },
-      { status: 500 },
+      {
+        error: rateLimited
+          ? "Upstream data source rate-limited the request. Wait a minute and try again."
+          : `Screener failed: ${message}`,
+        code: rateLimited ? "RATE_LIMIT" : "UNKNOWN",
+      },
+      { status: rateLimited ? 429 : 500 },
     );
   }
 }

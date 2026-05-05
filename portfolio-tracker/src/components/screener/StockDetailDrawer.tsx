@@ -128,7 +128,7 @@ export function StockDetailDrawer({
               ))}
             </div>
             <p className="mt-2 text-xs text-zinc-500">
-              Interpretation is rule-based from live FMP fields, not investment
+              Interpretation is rule-based from Yahoo chart + SEC data, not investment
               advice.
             </p>
           </section>
