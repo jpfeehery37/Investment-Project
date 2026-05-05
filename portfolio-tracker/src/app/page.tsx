@@ -26,6 +26,16 @@ function plBlockClass(value: number): string {
   return "text-zinc-300";
 }
 
+function formatMoney(value: number | null | undefined): string {
+  if (value == null) return "—";
+  return money.format(value);
+}
+
+function formatPercentRatio(value: number | null | undefined): string {
+  if (value == null) return "—";
+  return pct.format(value / 100);
+}
+
 export default async function Home() {
   const tickers = POSITIONS.map((p) => p.ticker);
   const prices = await fetchYahooPrices(tickers);
@@ -69,7 +79,7 @@ export default async function Home() {
             Total value
           </p>
           <p className="mt-2 font-mono text-2xl font-semibold tabular-nums tracking-tight text-white">
-            {hasAllPrices ? money.format(totalValue) : "—"}
+            {totalValue !== null ? money.format(totalValue) : "—"}
           </p>
         </div>
         <div className="rounded-xl border border-zinc-800 bg-gradient-to-br from-zinc-900/90 to-zinc-950 p-5 shadow-lg shadow-black/30">
@@ -79,7 +89,7 @@ export default async function Home() {
           <p
             className={`mt-2 font-mono text-2xl font-semibold tabular-nums tracking-tight ${totalPl != null ? plBlockClass(totalPl) : "text-zinc-500"}`}
           >
-            {totalPl != null ? money.format(totalPl) : "—"}
+            {formatMoney(totalPl)}
           </p>
         </div>
         <div className="rounded-xl border border-zinc-800 bg-gradient-to-br from-zinc-900/90 to-zinc-950 p-5 shadow-lg shadow-black/30">
@@ -89,7 +99,7 @@ export default async function Home() {
           <p
             className={`mt-2 font-mono text-2xl font-semibold tabular-nums tracking-tight ${totalPlPct != null ? plBlockClass(totalPlPct) : "text-zinc-500"}`}
           >
-            {totalPlPct != null ? pct.format(totalPlPct / 100) : "—"}
+            {formatPercentRatio(totalPlPct)}
           </p>
         </div>
       </section>
