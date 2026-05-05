@@ -79,7 +79,7 @@ export default async function Home() {
             Total value
           </p>
           <p className="mt-2 font-mono text-2xl font-semibold tabular-nums tracking-tight text-white">
-            {totalValue !== null ? money.format(totalValue) : "—"}
+            {formatMoney(totalValue)}
           </p>
         </div>
         <div className="rounded-xl border border-zinc-800 bg-gradient-to-br from-zinc-900/90 to-zinc-950 p-5 shadow-lg shadow-black/30">
