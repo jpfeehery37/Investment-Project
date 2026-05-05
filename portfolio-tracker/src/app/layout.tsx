@@ -1,3 +1,4 @@
+import { DashboardNav } from "@/components/DashboardNav";
 import type { Metadata } from "next";
 import { DM_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
@@ -29,6 +30,7 @@ export default function RootLayout({
       <body
         className={`${dmSans.variable} ${jetbrains.variable} bg-zinc-950 font-sans text-zinc-100`}
       >
+        <DashboardNav />
         {children}
       </body>
     </html>

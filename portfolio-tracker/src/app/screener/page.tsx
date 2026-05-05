@@ -1,0 +1,12 @@
+import { ScreenerClient } from "@/components/screener/ScreenerClient";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Stock Screener",
+  description:
+    "Find mispriced companies with improving fundamentals using live FMP data.",
+};
+
+export default function ScreenerPage() {
+  return <ScreenerClient />;
+}
